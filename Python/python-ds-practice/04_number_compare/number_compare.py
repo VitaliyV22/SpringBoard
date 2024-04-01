@@ -9,4 +9,17 @@ def number_compare(a, b):
         
         >>> number_compare(1, -2)
         'First is greater'
+<<<<<<< HEAD
     """
+=======
+    """
+    
+    if a > b: return "First is greater"
+    if a < b: return "Second is greater"
+    if a == b: return "Numbers are equal"
+    
+    
+    
+    
+print(number_compare(33,33))
+>>>>>>> ce8d43ceef7452c8efda90f250e1369b7b68b450

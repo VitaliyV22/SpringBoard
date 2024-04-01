@@ -7,3 +7,10 @@ def reverse_string(phrase):
         >>> reverse_string('sauce')
         'ecuas'
     """
+<<<<<<< HEAD
+=======
+    return phrase[::-1]
+
+
+print (reverse_string("hi"))
+>>>>>>> ce8d43ceef7452c8efda90f250e1369b7b68b450

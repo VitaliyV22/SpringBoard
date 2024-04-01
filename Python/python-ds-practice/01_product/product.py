@@ -6,4 +6,12 @@ def product(a, b):
 
         >>> product(2, -2)
         -4
+<<<<<<< HEAD
     """
+=======
+    """
+    return a * b
+
+
+print(product(2,4))
+>>>>>>> ce8d43ceef7452c8efda90f250e1369b7b68b450
