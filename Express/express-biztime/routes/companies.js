@@ -1,19 +1,25 @@
 const express = require('express');
 const router = new express.Router();
 const db = require('../db');
-
+const slugify = require('slugify');
 // Middleware to parse JSON
 router.use(express.json());
 
 // GET /companies
-router.get('/', async (req, res, next) => {
-  try {
-    const result = await db.query('SELECT code, name FROM companies');
-    return res.json({ companies: result.rows });
-  } catch (err) {
-    return next(err);
-  }
-});
+router.post('/', async (req, res, next) => {
+    try {
+      const { name, description } = req.body;
+      const code = slugify(name, { lower: true, strict: true });
+      const result = await db.query(
+        'INSERT INTO companies (code, name, description) VALUES ($1, $2, $3) RETURNING code, name, description',
+        [code, name, description]
+      );
+  
+      return res.status(201).json({ company: result.rows[0] });
+    } catch (err) {
+      return next(err);
+    }
+  });
 
 // GET /companies/[code]
 router.get('/:code', async (req, res, next) => {

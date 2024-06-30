@@ -58,24 +58,34 @@ router.post('/', async (req, res, next) => {
 
 // PUT /invoices/[id]
 router.put('/:id', async (req, res, next) => {
-  try {
-    const { id } = req.params;
-    const { amt } = req.body;
-
-    const result = await db.query(
-      'UPDATE invoices SET amt=$1 WHERE id=$2 RETURNING id, comp_code, amt, paid, add_date, paid_date',
-      [amt, id]
-    );
-
-    if (result.rows.length === 0) {
-      return res.status(404).json({ error: "Invoice not found" });
+    try {
+      const { id } = req.params;
+      const { amt, paid } = req.body;
+  
+      const result = await db.query('SELECT paid FROM invoices WHERE id=$1', [id]);
+      if (result.rows.length === 0) {
+        return res.status(404).json({ error: "Invoice not found" });
+      }
+  
+      const currentPaidStatus = result.rows[0].paid;
+      let paidDate = result.rows[0].paid_date;
+  
+      if (!currentPaidStatus && paid) {
+        paidDate = new Date();
+      } else if (currentPaidStatus && !paid) {
+        paidDate = null;
+      }
+  
+      const updateResult = await db.query(
+        'UPDATE invoices SET amt=$1, paid=$2, paid_date=$3 WHERE id=$4 RETURNING id, comp_code, amt, paid, add_date, paid_date',
+        [amt, paid, paidDate, id]
+      );
+  
+      return res.json({ invoice: updateResult.rows[0] });
+    } catch (err) {
+      return next(err);
     }
-
-    return res.json({ invoice: result.rows[0] });
-  } catch (err) {
-    return next(err);
-  }
-});
+  });
 
 // DELETE /invoices/[id]
 router.delete('/:id', async (req, res, next) => {
